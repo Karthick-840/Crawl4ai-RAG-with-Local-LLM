@@ -1,4 +1,9 @@
-flask>=2.0.0
-scikit-learn==1.0.1
-nltk==3.6.6
-# "import nltk; nltk.download('omw-1.4'); nltk.download('wordnet')"
+argparse
+requests==2.32.3
+beautifulsoup4==4.12.3
+lxml==5.3.1 
+python-dateutil==2.8.2
+asyncio      
+xml.etree.ElementTree
+typing       
+crawl4ai==0.5.0.post8

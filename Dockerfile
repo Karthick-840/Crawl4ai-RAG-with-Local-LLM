@@ -1,13 +1,17 @@
-FROM python:3.8
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim-buster
 
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the requirements file into the container at /app
 COPY requirements.txt .
 
-RUN pip install -r requirements.txt
+# Install any dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN python -c "import nltk; nltk.download('omw-1.4'); nltk.download('wordnet')"
-
+# Copy the rest of your application code into the container
 COPY . .
 
-EXPOSE 5000
-
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+# Set the entrypoint command to run your script
+ENTRYPOINT ["python", "main.py"]

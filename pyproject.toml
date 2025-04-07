@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "crawl4ai-local-setup"
+version = "0.1.0"
+description = "Local setup for Crawl4AI with specific library versions for consistent documentation scraping. 📚"
+authors = ["Karthick Jayaraman <karthick840@yahoo.in>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+argparse = "*"        # Part of standard library, no specific version needed
+requests = "==2.32.3"
+beautifulsoup4 = "==4.12.3"
+lxml = "==5.3.1"
+python-dateutil = "==2.8.2"
+asyncio = "*"         # Part of standard library
+xml.etree.ElementTree = "*" # Part of standard library
+typing = "*"          # Part of standard library
+crawl4ai = "0.5.0.post8" # Replace with the specific version you have/use locally
+
+[tool.poetry.group.dev.dependencies]
+# Add any development dependencies here, like testing frameworks
+# pytest = "^7.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,103 +1,86 @@
-# Sentiment Analysis using Machine Learning
+# 🧠 Local LLM Knowledge Expansion with Crawl4AI 🚀
 
-This project performs sentiment analysis on tweets using various machine learning models. The code processes raw tweet text, trains models to classify sentiment, and provides a pipeline for making predictions.
+Local Large Language Models are missing the latest insights. 🧐 This little side quest tackles that head-on!
 
-## Table of Contents
+The goal here is to create a streamlined process for fetching up-to-date documentation from the web and use open-source embedding models to create Vector Database. Think of it as giving your local models a continuous knowledge boost! 💪
 
-- [Installation](#installation)
-- [Dataset](#dataset)
-- [Preprocessing](#preprocessing)
-- [Model Training](#model-training)
-- [Evaluation](#evaluation)
-- [Pipeline](#pipeline)
-- [Prediction](#prediction)
-- [Usage](#usage)
+For Instance, I imparted **[PydanticAI](https://ai.pydantic.dev/)** documentation as RAG for my locally running **[StarCoder: A State-of-the-Art LLM for Code ](https://huggingface.co/blog/starcoder)** to do some cool **"vibe coding"** 🎶
 
-## Installation
+The core of the web scraping process relies on **[Crawl4AI](https://github.com/unclecode/crawl4ai)**,🕷️. While I didn't build it myself, an impressive open-source framework to work with for LLM applications... 🤓
 
-1. Clone the repository.
-2. Install the necessary Python packages:
+**Workflow**
+
+1.  **Scrapes relevant documentation:** 
+    - Provide a list of URLs (preferably start pages). 
+    - It then uses `sitemap.xml` to get all URLS of the webpage and saves them as `.md` files.
+    - Always respect the `robots.txt` best practices. *[Soon will be added]*
+
+2.  **Enables embedding creation:** 
+    - These Markdown files can then be used to build knowledge embeddings for Retrieval-Augmented Generation (RAG) applications, 
+    - [IBM Granite-Embedding](https://www.ibm.com/granite/docs/models/embedding/) is used as it works sufficiently for many use-cases.
+    - Interact in terminal within Ollama Framework like **[Gemma3](https://blog.google/technology/developers/gemma-3/)** model.
     ```bash
+    ollama serve
+    ollama run gemma3
+    ```
+
+**Installation: 🛠️**
+
+1. *As a package📦*
+    - Use `Poetry` for dependency management by refering to the `pyproject.toml`.
+    ```bash
+    poetry install
+    poetry shell
+    ```
+    - Alternatively, install via `requirements.txt` file:
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Linux/macOS
     pip install -r requirements.txt
+    pip install .
     ```
-3. Download necessary NLTK data:
-    ```python
-    import nltk
-    nltk.download('omw-1.4')
-    nltk.download('wordnet')
-    ```
+2. *Running with Docker 🐳*
 
-## Dataset
+Navigate to the directory containing the `Dockerfile` and build the Docker image for a more isolated and reproducible running environment:
 
-The dataset used is a preprocessed version of the Sentiment140 dataset, containing tweets labeled as either positive or negative.
+        ```bash
+        docker build -t crawl4ai-doc-scraper .
+        ```
 
-- **Columns**: `["sentiment", "ids", "date", "flag", "user", "text"]`
-- **Encoding**: `ISO-8859-1`
-- **Location**: The dataset should be in a CSV file located at `C:\Users\gksme\PycharmProjects\Local_Git_Projects\profile\big_investor_pics\archive\training.1600000.processed.noemoticon.csv`.
+**Running the Documentation Scraper ⚙️**
 
-## Preprocessing
+Once you have the environment set up (either locally or via Docker), you can run the `main.py` script to start scraping.
 
-The code preprocesses the tweet text by:
+The script accepts the following arguments:
 
-1. Replacing URLs with a placeholder.
-2. Replacing user mentions with a placeholder.
-3. Handling emojis by replacing them with corresponding text representations.
-4. Removing non-alphabetical characters.
-5. Reducing sequences of three or more repeating characters to two.
-6. Lemmatizing words to their base form.
-7. Removing stopwords from the text.
+* `url_list`: A list of URLs to scrape documentation from.
+* `-g get_all_pages true`: This flag tells Crawl4AI to crawl and scrape all sub-pages found on the initial URLs. If set to `false`, only the content of the initial URLs or start page will be scraped.
 
-## Model Training
+**Example Usage:**
 
-The following machine learning models are trained on the processed tweet text:
+```bash
+# Local execution (after activating the virtual environment)
+python3 main.py "[https://langchain-ai.github.io/langgraph](https://langchain-ai.github.io/langgraph)" "[https://docs.smith.langchain.com/](https://docs.smith.langchain.com/)" -g true
 
-1. **Bernoulli Naive Bayes** (`BernoulliNB`)
-2. **Linear Support Vector Classifier** (`LinearSVC`)
-3. **Logistic Regression** (`LogisticRegression`)
+# Docker execution (as shown in the Docker installation step)
+docker run crawl4ai-doc-scraper python3 main.py --url "[https://langchain-ai.github.io/langgraph](https://langchain-ai.github.io/langgraph)" "[https://docs.smith.langchain.com/](https://docs.smith.langchain.com/)" -g true
+```
 
-The models are trained using `TfidfVectorizer` to convert the text data into numerical features.
 
-## Evaluation
 
-The models are evaluated on a test set, and the following metrics are used:
 
-- **Precision**
-- **Recall**
-- **F1-score**
-- **Accuracy**
+## License 📜
 
-The `model_evaluate()` function prints a classification report for each model.
+This project utilizes the MIT License. You are free to use, modify, and distribute it according to the terms of this license. See the `LICENSE` file for the full text.
 
-## Pipeline
+## Contributing and Future Improvements 🌱
 
-The code creates a machine learning pipeline using `sklearn.pipeline.Pipeline`, combining the `TfidfVectorizer` and the trained `BernoulliNB` model. The pipeline is saved as a pickle file (`pipeline.pickle`) for easy reuse.
+While this is a personal side quest, feel free to reach out if you have ideas or suggestions! Future improvements could include:
 
-## Prediction
+* More sophisticated content filtering during scraping.
+* Automated embedding generation after scraping.
+* Integration with specific local LLM workflows.
 
-A `predict()` function is provided to classify new text inputs. The function takes a list of text strings, preprocesses them, and returns the predicted sentiment.
+## Conclusion 🎉
 
-- **Input**: List of text strings.
-- **Output**: List of tuples containing the original text, predicted label (0 or 1), and sentiment (`Negative` or `Positive`).
-
-## Usage
-
-To use the sentiment analysis pipeline:
-
-1. Load the pipeline:
-    ```python
-    with open('pipeline.pickle', 'rb') as f:
-        loaded_pipe = pickle.load(f)
-    ```
-
-2. Predict sentiment for new text:
-    ```python
-    text = ["I hate twitter", "May the Force be with you.", "Mr. Stark, I don't feel so good"]
-    predictions = predict(loaded_pipe, text)
-    print(predictions)
-    ```
-
-The output will show the sentiment analysis for each input text.
-
----
-
-This project demonstrates how to preprocess text data, train machine learning models, and make sentiment predictions using a pipeline approach. The trained models and pipeline are saved for easy reuse in real-world applications.
+This setup demonstrates a practical approach to keeping local LLMs informed with the latest web documentation. By leveraging the power of Crawl4AI and creating a consistent environment, we can enhance our learning, coding, and exploration with local AI models. Happy exploring! 🗺️
